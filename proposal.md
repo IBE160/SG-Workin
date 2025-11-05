@@ -48,6 +48,44 @@ The purpose of this application is to create an AI-powered FAQ chatbot that help
 - **Criterion 4:** User satisfaction (measured through feedback or survey) exceeds 80%.  
 - **Criterion 5:** The chatbot reduces repetitive inquiries to the university’s support staff.
 
+
+## User Flows
+
+### Flow 1: Enter site ask questions about study program
+**Entry point:**  
+
+
+| Step | User Action | Bot Response / System Action | Branch / Condition |
+|------|-------------|------------------------------|--------------------|
+| **0** | User lands on website  → clicks **“Ask EduBot”** chat bubble | Bot opens with greeting:<br>**“Hello! I'm EduBot, your guide to our study programs. What would you like to know about Computer Science (or another program)?”**<br>Quick replies: [Admissions] [Curriculum] [Fees] [Start chat] | — |
+| **1** | User types initial question (e.g., “What are the entry requirements for Computer Science?”) | **RAG Process:**<br>- Embed query → Retrieve top-3 chunks from KB (e.g., admissions PDF).<br>- Augment LLM prompt with retrieved context.<br>- Generate response: **“For our BSc Computer Science, you'll need a high school diploma with 70% in Math & Science, plus English proficiency (IELTS 6.5). International students get fee waivers—want details?”**<br>Source citation: [Admissions Guide, p. 5] | → **2** (always, for conversation) |
+| **1A** | User selects quick reply (e.g., [Curriculum]) | **RAG Process:**<br>- Retrieve from syllabus KB.<br>- Response: **“The curriculum covers Algorithms, AI, and Web Dev over 3 years. Core modules: Year 1 - Programming Basics (30 credits). See full outline?”**<br>Attaches structured card (e.g., module list). | → **2** |
+| **1B** | Unrecognized intent / off-topic (e.g., “Weather today?”) | Fallback: **“I'm specialized in study programs—try asking about admissions or courses. Or rephrase?”**<br>Loops to quick replies. | Loop to **1** until relevant |
+| **2** | User asks follow-up (e.g., “What about international fee waivers?”) | **RAG Process (Context-Aware):**<br>- Embed query + conversation history (prior context on CS admissions).<br>- Retrieve updated chunks (e.g., fees section, filtered by “international”).<br>- Generate: **“International students pay $15,000/year (vs. $20,000 domestic), with 20% waivers for top applicants. Apply by March 1—need application tips?”**<br>Cites source: [Fees Policy 2025, Sec. 3] | → **3** or loop to **2** |
+| **2A** | Follow-up builds on prior (e.g., “More on AI module?” after curriculum) | **RAG Process:**<br>- History-aware retrieval (prioritizes AI-related chunks).<br>- Response: **“The AI module (Year 2) includes Machine Learning and Ethics, taught by Dr. Lee. Prerequisites: Programming Basics. Syllabus PDF available—download?”**<br>Attaches link/PDF snippet. | Loop to **2** for multi-turn |
+| **2B** | Shift topic slightly (e.g., “Compare to Data Science program?”) | **RAG Process:**<br>- Retrieve comparative chunks (e.g., program overviews).<br>- Response: **“CS focuses on software engineering; Data Science emphasizes stats & big data (80% overlap). Both share Year 1 core—switch possible after Semester 1.”**<br>Offers: [Side-by-side table] | → **2** (continue) |
+| **3** | User satisfied (e.g., “That's all, thanks!”) or idles >2min | Bot: **“Great chatting! If you have more questions, I'm here 24/7. Apply now? [Apply Link]”**<br>Session summary emailed (opt-in). | End session |
+| **4** | User not satisfied (e.g., “need more info”) | Bot:  **“sorry couldnt answer all your questions,  I will forward your message to a academic advisor”**<br>Forward chat log to academic advisor.<br>Session summary emailed (opt-in) | End session |
+| **End** | User closes chat (X) or says “bye” | Bot: **“Thanks for inquiring! Best of luck with your studies.”**<br>Logs session for analytics (query success, retrieval relevance). | Session closed; KB update if needed |
+
+
+
+### Flow 2: Administrator user flow, Administrator enter site, list, add or modify URL for crawl/scrape/search, or to add Administrator users.
+
+| Step | User Action | System Action | Branch / Condition |
+|------|-------------|------------------------------|--------------------|
+| **0** | Administrator open admin url of website  →  **“Login”** | Admin page opens opens with a list of already scraped url with time stamp of last scrape, status /error messages and the possibility to update, delete or exclude(Pause) selected url's, or to add a new url through a field. The option for new url should be on top of the page. There should also be a link to a page to add new administrator users | → **1** **2** **3** **4** **5** |
+| **1** | Administrator **add new url:** (Admin type or paste a url into the add url field, cliks button for "add url")	 |System add the url to the database and crawl/scrape/search, when finished updates time stamp.| → **0** |
+| **2** | Administrator **update url:** (Admin click button for "update url")	 |System crawl/scrape/search the given url, when finished updates time stamp.| → **0** |
+| **3** | Administrator **delete url:** (Admin click button for "delete url")	 |System delete the given url from database.| → **0** |
+| **4** | Administrator **exclude url:** (Admin click button for "exclude url")	 |System marks the given url in the database for exclusion.| → **0** |
+| **5** | Administrator **Manage administrator users:** (Admin click button to "Manage administrators")	 |System open new page to manage Administrator, list all administrators with the possibility to add new administrator (Admin Click button for "add admin"), or "Delete" or "reset password" for existing administrators.| → **5A** **5B** **5C** |
+| **5A** | Administrator **Add administrator users:** (Admin click button to "Add administrator users")	 |System open new page to add a new Administrator, 2 fields for new administrator: username and e-mail(must be filled) New Administrator added to database| → **5** |
+| **5B** | Administrator **Delete:** (Admin click button for "Delete administrator")|System delete the given Administrator user.| → **5** |
+| **5C** | Administrator **Delete:** (Admin click button for "reset password")|System send email to given Administrator user to reset password.| → **5** |
+| **End** | Administrator **"logs out:** | | Session closed |
+
+
 ## Technical Specifications
 
 ### Frontend Specification
@@ -64,7 +102,7 @@ The purpose of this application is to create an AI-powered FAQ chatbot that help
 ### Backend Specification
 - **Framework**: FastAPI (Python) for high-performance RESTful API development
 - **Language**: Python for AI integration compatibility and rapid development
-- **Database**: Supabase (PostgreSQL) for managed database and real-time capabilities
+- **Database**: Supabase (PostgreSQL) for managed database, real-time capabilities and vectordatabase(pgvector)
 - **Authentication**: Supabase Auth for Administrator users management, JWT tokens, and email verification
 - **Authorization**: Row Level Security (RLS) policies in Supabase + role-based middleware (user/admin roles)
 - **ORM**: SQLAlchemy for database operations and type safety
@@ -82,39 +120,32 @@ The purpose of this application is to create an AI-powered FAQ chatbot that help
 
 
 ### Database Specification
-- **Database Type**: Supabase (PostgreSQL-based relational database)
+- **Database Type**: Supabase (PostgreSQL-based relational database and Vector database)
 - **ORM**: SQLAlchemy for Python-based type-safe database access
 - **Migrations**: Alembic for database schema version control
 - **Hosting**: Supabase managed cloud (includes automatic backups, scaling, and monitoring)
 
 **Schema Design**:
 - **Normalized relational schema** with proper foreign key constraints
-- **Row Level Security (RLS)**: Supabase RLS policies to ensure users only access their own data
-- **Indexes** on frequently queried fields (user_id, game_id, session_id, class_id)
-- **JSON/JSONB columns** for flexible configuration storage (game_config, questions, metrics)
-- **Partitioning** for game_rounds table if data volume grows (future optimization)
-- **Soft deletes** for user data (GDPR compliance)
+- **Indexes** on frequently queried fields
 - **Supabase Auth integration**: Users table managed by Supabase Auth with extended profile data
+- **Vector embeddings**: to enable similarity search and contextual retrieval
+- **Timestamps**: for versioning and updates.
 
-**Supabase-Specific Features**:
-- **Real-time subscriptions**: Frontend can subscribe to game_rounds and player_states changes for live updates
-- **RLS Policies**: Students can only view their own games; teachers can view their class games
 
 ### AI Integration Specification
 **AI Use Cases**:
-1. **AI Players**: Generate ordering decisions for AI-controlled supply chain positions
-2. **Question Generation**: Create contextual multiple-choice questions based on game events
-3. **Feedback Generation**: Provide personalized feedback on student performance
-4. **Performance Analysis**: Generate insights about decision patterns and strategy effectiveness
+1. **AI chatBot**: Answer, and ask concise relevant follow up questions to deepen understanding, clarify ambiguities, or explore related aspects of the question from the user. should be relevant to the indexed url's (data in the vectordatabase.)
 
 **Implementation**:
 - **Model**: Gemini 2.5 pro/flash
 - **Prompt Design**:
-  - AI players receive game rules, current state, and role context
-  - Question generator receives game transcript and specific events
-  - Few-shot examples for consistent output format
+  - User ask question about study program.
+  - The backend get relevant data from the vector database and includes this information in the answers and possible follow-up questions.
+  - If the user ask question not relevant to the indexed data, remind the user of the intention of this chatbot and suggest alternative questions. 
+ 
 - **Rate Limiting**: Implement request queuing and caching for cost optimization
-- **Fallback**: Rule-based AI for critical game functions if API fails
+- **Fallback**: Explanatory error message if API fails
 - **Cost Management**: Budget monitoring and usage alerts
 
 **API Integration Architecture**:
@@ -144,7 +175,7 @@ The purpose of this application is to create an AI-powered FAQ chatbot that help
 - Tablet: 768px-1023px (adapted layout)
 - Mobile: 375px-767px (future phase - simplified UI)
 
-### User Authentication Specification
+### Admin User Authentication Specification
 **Authentication Method**: Supabase Auth with JWT-based authentication
 
 **Features**:
@@ -154,7 +185,7 @@ The purpose of this application is to create an AI-powered FAQ chatbot that help
 - Session management with automatic refresh token rotation
 - "Remember me" functionality via Supabase persistent sessions
 - Account lockout and rate limiting built into Supabase Auth
-- User metadata storage for roles (student/teacher/admin)
+- User metadata storage for roles (user/admin)
 
 **Implementation Details**:
 - Passwords automatically hashed by Supabase (bcrypt)
@@ -178,3 +209,4 @@ The purpose of this application is to create an AI-powered FAQ chatbot that help
 - Password strength requirements configurable in Supabase
 - Row Level Security (RLS) policies enforce data access control
 - Supabase API keys separated (public anon key vs. service role key)
+
