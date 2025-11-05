@@ -210,3 +210,56 @@ The purpose of this application is to create an AI-powered FAQ chatbot that help
 - Row Level Security (RLS) policies enforce data access control
 - Supabase API keys separated (public anon key vs. service role key)
 
+## Timeline and Milestones
+
+**Total Duration:** 5 weeks  
+**Methodology:** BMAD (4 phases – Business, Metrics, Actions, Data)
+
+| Phase | Week | Focus | Deliverables (Milestones) | Roles |
+|-------|------|--------|----------------------------|--------|
+| **Phase 1 & 2 – Analysis & Planning** | 43 | Understand problem and define MVP (brainstorm + product manager) | - Updated `proposal.md` <br> - `product-brief.md` (goals, users, success criteria) <br> - `PRD.md` (feature list + MVP scope) | Product Manager, Researcher |
+| **Phase 3 – Solution Architecture & Design (Part 1)** | 44 | Technical architecture + AI flow and data structure | - `solution-architecture.md` (frontend / backend / AI architecture) <br> - Data model for knowledge base and vector DB <br> - `frontend-prompt.md` (chat logic / system prompt) | Architect, UX Designer |
+| **Phase 3 – Solution Architecture & Design (Part 2)** | 45 | UI/UX prototype and architecture finalization | - `ux-specification.md` (wireframes + responsive design) <br> - Interactive prototype (Figma or equivalent) <br> - Confirmed tech stack (Next.js 14, Tailwind, Gemini API / LangChain / Chroma) | Architect, UX Designer |
+| **Phase 4 – Implementation Cycle 1** | 46 | MVP development (core functions) | - Next.js project initialized in VS Code <br> - Chat UI (frontend) + API endpoint for answers <br> - Gemini API integration (RAG prototype) <br> - Source citation + fallback handling <br> - `Epic-plan.md` (JIT development plan) | Developer, Prompt Engineer |
+| **Phase 4 – Implementation Cycle 2** | 47 | Testing, finalization, and deployment | - Fully functional chatbot MVP deployed on Vercel <br> - Testing (performance, accuracy, accessibility) <br> - `testing-report.md` (QA results) <br> - `deployment-guide.md` + `README` ready for delivery | Developer, QA Tester |
+
+---
+
+### Weekly Breakdown
+
+#### Week 43 – Analysis & Planning
+- Brainstorm requirements and user needs (students, applicants, staff)  
+- Define MVP and optional features  
+- Write `product-brief.md` and `PRD.md`  
+Milestone: Approved `proposal.md` and `PRD.md`
+
+---
+
+#### Week 44 – Technical Architecture
+- Describe data flow (RAG model, embeddings, vector DB)  
+- Design API structure and query/response flow  
+- Draft system prompt for Gemini integration  
+Milestone: Completed `solution-architecture.md` and `frontend-prompt.md`
+
+---
+
+#### Week 45 – UX/UI Design & Specification
+- Create wireframes and UX documentation  
+- Confirm tech stack and component library  
+Milestone: Approved design prototype and architecture
+
+---
+
+#### Week 46 – Implementation Cycle 1
+- Initialize Next.js project with Tailwind CSS  
+- Build basic chat UI and Gemini API integration  
+- Test retrieval and source references  
+Milestone: Working RAG chatbot (MVP)
+
+---
+
+#### Week 47 – Implementation Cycle 2
+- Complete testing and bug fixing  
+- Add fallback strategy and performance tuning  
+- Deploy to Vercel and document solution  
+Milestone: Fully functional app and GitHub repository ready for submission
