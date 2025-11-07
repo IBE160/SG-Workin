@@ -30,8 +30,8 @@ workflow_path: "greenfield-level-3.yaml"
 
 workflow_status: |
     # Phase 1: Analysis
-    brainstorm-project: /Users/linelyngsnesjohansen/ib160/SG-Workin/docs/brainstorming-session-results-Thursday, November 6, 2025.md
-    research: /Users/linelyngsnesjohansen/ib160/SG-Workin/docs/research-technical-Friday, November 7, 2025.md
+    brainstorm-project: /docs/brainstorming-session-results-Thursday, November 6, 2025.md
+    research: /docs/research-technical-fredag 7. november 2025.md
     product-brief: recommended
 
     # Phase 2: Planning
