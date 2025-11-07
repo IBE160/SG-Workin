@@ -23,12 +23,11 @@
 
 generated: "Friday, November 7, 2025"
 project: "ibe160"
-project_type: "null"
+project_type: "software"
 project_level: "beginner"
-field_type: "null"
-workflow_path: "null"
+field_type: "greenfield"
+workflow_path: "greenfield-level-3.yaml"
 
-<<<<<<< HEAD
 workflow_status: |
     # Phase 1: Analysis
     brainstorm-project: /docs/brainstorming-session-results-Thursday, November 6, 2025.md
@@ -47,6 +46,3 @@ workflow_status: |
 
     # Phase 4: Implementation
     sprint-planning: required
-=======
-workflow_status: "null"
->>>>>>> 3e84c54e2a34821b7cd8c65c74c0b49bce57d41e
