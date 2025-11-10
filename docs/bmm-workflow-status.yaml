@@ -32,7 +32,7 @@ workflow_status: |
     # Phase 1: Analysis
     brainstorm-project: /docs/brainstorming-session-results-Thursday, November 6, 2025.md
     research: /docs/research-technical-fredag 7. november 2025.md
-    product-brief: recommended
+    product-brief: /Users/linelyngsnesjohansen/ib160/SG-Workin/docs/product-brief-ibe160-Monday, November 10, 2025.md
 
     # Phase 2: Planning
     prd: required
