@@ -24,7 +24,7 @@
 generated: "Thursday, November 6, 2025"
 project: "ibe160"
 project_type: "software"
-selected_track: "3"
+selected_track: "method"
 field_type: "greenfield"
 workflow_path: "method-greenfield.yaml"
 
