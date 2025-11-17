@@ -35,7 +35,8 @@ workflow_status: |
     product-brief: docs/product-brief-ibe160-Monday, November 10, 2025.md
 
     # Phase 1: Planning
-    prd: required
+    prd: docs/PRD.md
+    create-epics-and-stories: docs/epics.md
     validate-prd: optional
     create-design: conditional
 
