@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UX Design Direction Showcase | ibe160 Project</title>
+    <style>
+        :root {
+            --theme-primary: #2A4B7C;
+            --theme-secondary: #4A6D4D;
+            --theme-accent: #A9B2B9;
+            --theme-neutral: #F5F5F5;
+            --theme-text: #212529;
+            --theme-text-light: #F8F9FA;
+            --theme-bg: #FFFFFF;
+        }
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+            background-color: #E9ECEF;
+            color: #495057;
+            margin: 0;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+            font-weight: 600;
+            line-height: 1.3;
+            color: var(--theme-text);
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        p.intro {
+            text-align: center;
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .directions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+        .direction-card {
+            background-color: var(--theme-bg);
+            border: 1px solid #DEE2E6;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+        .direction-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #DEE2E6;
+        }
+        .direction-header h3 {
+            margin: 0;
+            font-size: 1.25rem;
+        }
+        .direction-header p {
+            margin: 0.25rem 0 0 0;
+            font-size: 0.9rem;
+            color: #6C757D;
+        }
+        .direction-body {
+            flex-grow: 1;
+            padding: 1.5rem;
+            background-color: var(--theme-neutral);
+        }
+        
+        /* Chat Mockup Styles */
+        .chat-window {
+            background: var(--theme-bg);
+            height: 500px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-messages {
+            flex-grow: 1;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+        .chat-bubble {
+            max-width: 80%;
+            margin-bottom: 1rem;
+            padding: 0.75rem 1rem;
+            line-height: 1.5;
+        }
+        .chat-bubble.user {
+            background-color: var(--theme-primary);
+            color: var(--theme-text-light);
+            margin-left: auto;
+        }
+        .chat-bubble.bot {
+            background-color: #E9ECEF;
+            color: var(--theme-text);
+            margin-right: auto;
+        }
+        .chat-bubble p:first-child { margin-top: 0; }
+        .chat-bubble p:last-child { margin-bottom: 0; }
+        
+        .sources {
+            margin-top: 1rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+        .sources h4 {
+            font-size: 0.8rem;
+            margin: 0 0 0.5rem 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6C757D;
+        }
+        .source-link {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--theme-primary);
+            text-decoration: none;
+            margin-bottom: 0.25rem;
+        }
+        .source-link:hover { text-decoration: underline; }
+
+        .chat-input-area {
+            padding: 1rem;
+            border-top: 1px solid #DEE2E6;
+            display: flex;
+            align-items: center;
+        }
+        .chat-input {
+            flex-grow: 1;
+            border: 1px solid #CED4DA;
+            font-size: 1rem;
+            padding: 0.75rem 1rem;
+        }
+        .chat-send-btn {
+            border: none;
+            background-color: var(--theme-primary);
+            color: var(--theme-text-light);
+            font-weight: 500;
+            cursor: pointer;
+            padding: 0.75rem 1.5rem;
+        }
+        
+        /* --- Direction Specific Styles --- */
+        
+        /* 1. Classic Bubbles */
+        .dir-1 .chat-bubble { border-radius: 18px; }
+        .dir-1 .chat-input { border-radius: 18px 0 0 18px; }
+        .dir-1 .chat-send-btn { border-radius: 0 18px 18px 0; }
+        
+        /* 2. Sharp & Modern */
+        .dir-2 .chat-bubble { border-radius: 8px; }
+        .dir-2 .chat-bubble.bot { background-color: transparent; border: 1px solid var(--theme-accent); }
+        .dir-2 .chat-input, .dir-2 .chat-send-btn { border-radius: 8px; }
+        .dir-2 .chat-input { margin-right: 1rem; }
+        
+        /* 3. Spacious Minimalist */
+        .dir-3 .chat-window { box-shadow: 0 10px 30px rgba(0,0,0,0.07); }
+        .dir-3 .chat-bubble { border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .dir-3 .chat-bubble.bot { background-color: var(--theme-bg); }
+        .dir-3 .chat-input-area { background: var(--theme-neutral); }
+        .dir-3 .chat-input { border-radius: 8px; border: none; }
+        .dir-3 .chat-send-btn { border-radius: 8px; margin-left: 1rem; }
+        
+        /* 4. Card-Based Bot */
+        .dir-4 .chat-bubble.bot { border-radius: 8px; background-color: var(--theme-bg); border: 1px solid #DEE2E6; padding: 0;}
+        .dir-4 .chat-bubble.bot .card-content { padding: 1rem; }
+        .dir-4 .chat-bubble.bot .sources { background-color: #F8F9FA; padding: 1rem; border-top: 1px solid #DEE2E6; border-radius: 0 0 8px 8px;}
+        .dir-4 .chat-bubble { border-radius: 18px; }
+        .dir-4 .chat-input { border-radius: 8px 0 0 8px; }
+        .dir-4 .chat-send-btn { border-radius: 0 8px 8px 0; }
+        
+        /* 5. Rich & Elevated */
+        .dir-5 .chat-window { border: none; }
+        .dir-5 .chat-messages { background-image: linear-gradient(to top, #F5F5F5, #FFFFFF); }
+        .dir-5 .chat-bubble { border-radius: 12px; box-shadow: 0 4px 10px rgba(42, 75, 124, 0.1); }
+        .dir-5 .chat-bubble.bot { background-color: var(--theme-bg); }
+        .dir-5 .chat-input-area { border: none; background-color: rgba(255,255,255,0.8); backdrop-filter: blur(10px); padding: 1.5rem; }
+        .dir-5 .chat-input { border-radius: 25px; padding: 0.75rem 1.5rem; background: var(--theme-neutral); border-color: transparent;}
+        .dir-5 .chat-send-btn { display: none; } /* Assumes enter-to-send */
+        
+        /* 6. Compact & Efficient */
+        .dir-6 .chat-bubble { border-radius: 4px; font-size: 0.95rem; padding: 0.6rem 0.9rem; max-width: 85%;}
+        .dir-6 .chat-input-area { padding: 0.75rem; }
+        .dir-6 .chat-input { padding: 0.6rem 0.9rem; font-size: 0.95rem; border-radius: 4px; }
+        .dir-6 .chat-send-btn { padding: 0.6rem 1.2rem; font-size: 0.95rem; border-radius: 4px; margin-left: 0.5rem;}
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Design Direction Showcase</h1>
+        <p class="intro">These mockups explore different visual and interaction styles for the chatbot interface, using the "Mountain Majesty" theme. Focus on the overall layout, density, and feel of the conversation. Which direction feels most aligned with the goal of an "effortless and precise" experience?</p>
+
+        <div class="directions-grid">
+
+            <!-- Direction 1 -->
+            <div class="direction-card dir-1">
+                <div class="direction-header">
+                    <h3>1. Classic Bubbles</h3>
+                    <p>Familiar, friendly, and intuitive. Uses traditional rounded bubbles for a classic chat feel.</p>
+                </div>
+                <div class="direction-body">
+                    <div class="chat-window">
+                        <div class="chat-messages">
+                            <div class="chat-bubble bot"><p>Hi there! How can I help you find information about studies at Høgskolen i Molde?</p></div>
+                            <div class="chat-bubble user"><p>Tell me about combining logistics and economics.</p></div>
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" class="chat-input" placeholder="Ask a question...">
+                            <button class="chat-send-btn">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Direction 2 -->
+            <div class="direction-card dir-2">
+                <div class="direction-header">
+                    <h3>2. Sharp & Modern</h3>
+                    <p>Clean and contemporary. Uses squared corners and outlined bot messages for a modern, structured look.</p>
+                </div>
+                <div class="direction-body">
+                    <div class="chat-window">
+                        <div class="chat-messages">
+                            <div class="chat-bubble bot"><p>Hi there! How can I help you find information about studies at Høgskolen i Molde?</p></div>
+                            <div class="chat-bubble user"><p>Tell me about combining logistics and economics.</p></div>
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" class="chat-input" placeholder="Ask a question...">
+                            <button class="chat-send-btn">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Direction 3 -->
+            <div class="direction-card dir-3">
+                <div class="direction-header">
+                    <h3>3. Spacious Minimalist</h3>
+                    <p>Airy and focused. Uses extra white space and subtle shadows to create a calm, premium feel.</p>
+                </div>
+                <div class="direction-body">
+                    <div class="chat-window">
+                        <div class="chat-messages">
+                            <div class="chat-bubble bot"><p>Hi there! How can I help you find information about studies at Høgskolen i Molde?</p></div>
+                            <div class="chat-bubble user"><p>Tell me about combining logistics and economics.</p></div>
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" class="chat-input" placeholder="Ask a question...">
+                            <button class="chat-send-btn">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Direction 4 -->
+            <div class="direction-card dir-4">
+                <div class="direction-header">
+                    <h3>4. Card-Based Bot</h3>
+                    <p>Structured and clear. Bot responses are formatted as distinct cards, separating content from sources.</p>
+                </div>
+                <div class="direction-body">
+                    <div class="chat-window">
+                        <div class="chat-messages">
+                            <div class="chat-bubble user"><p>Tell me about combining logistics and economics.</p></div>
+                            <div class="chat-bubble bot">
+                                <div class="card-content">
+                                    <p>Combining Logistics and Economics gives you a strong profile. Our MSc in Logistics and Supply Chain Management is a popular choice.</p>
+                                    <p>Many students take economics courses as electives to specialize further.</p>
+                                </div>
+                                <div class="sources">
+                                    <h4>Sources</h4>
+                                    <a href="#" class="source-link">MSc in Logistics</a>
+                                    <a href="#" class="source-link">Elective Courses</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" class="chat-input" placeholder="Ask a question...">
+                            <button class="chat-send-btn">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Direction 5 -->
+            <div class="direction-card dir-5">
+                <div class="direction-header">
+                    <h3>5. Rich & Elevated</h3>
+                    <p>Polished and immersive. Uses gradients and blur effects for a visually rich, modern look. Assumes "Enter" to send.</p>
+                </div>
+                <div class="direction-body">
+                    <div class="chat-window">
+                        <div class="chat-messages">
+                            <div class="chat-bubble bot"><p>Hi there! How can I help you find information about studies at Høgskolen i Molde?</p></div>
+                            <div class="chat-bubble user"><p>Tell me about combining logistics and economics.</p></div>
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" class="chat-input" placeholder="Ask a question...">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Direction 6 -->
+            <div class="direction-card dir-6">
+                <div class="direction-header">
+                    <h3>6. Compact & Efficient</h3>
+                    <p>Dense and scannable. A more compact layout for users who want to see more information on the screen at once.</p>
+                </div>
+                <div class="direction-body">
+                    <div class="chat-window">
+                        <div class="chat-messages">
+                            <div class="chat-bubble bot"><p>Hi there! How can I help you find information about studies at Høgskolen i Molde?</p></div>
+                            <div class="chat-bubble user"><p>Tell me about combining logistics and economics.</p></div>
+                             <div class="chat-bubble bot">
+                                <p>Combining Logistics and Economics is a strong profile. Our MSc in Logistics and SCM is a popular choice.</p>
+                                <div class="sources">
+                                    <h4>Sources</h4>
+                                    <a href="#" class="source-link">MSc in Logistics</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" class="chat-input" placeholder="Ask a question...">
+                            <button class="chat-send-btn">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UX Color Theme Visualizer | ibe160 Project</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #F8F9FA;
+            color: #212529;
+            margin: 0;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1, h2, h3 {
+            font-weight: 600;
+            line-height: 1.2;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            color: #343A40;
+        }
+        p.intro {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #6C757D;
+            margin-bottom: 3rem;
+        }
+        .themes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+        .theme-card {
+            background-color: #FFFFFF;
+            border: 1px solid #DEE2E6;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        .theme-header {
+            padding: 1.5rem;
+        }
+        .theme-header h2 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.5rem;
+        }
+        .theme-header p {
+            margin: 0;
+            color: #6C757D;
+        }
+        .theme-body {
+            padding: 1.5rem;
+            background-color: #F8F9FA;
+        }
+        .palette {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .color-swatch {
+            border-radius: 5px;
+            padding: 1rem;
+            color: white;
+            font-weight: 500;
+            font-size: 0.9rem;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        .color-swatch span {
+            display: block;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        .components-preview {
+            border: 1px solid #DEE2E6;
+            border-radius: 8px;
+            padding: 1.5rem;
+            background-color: #FFFFFF;
+        }
+        .components-preview h3 {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #E9ECEF;
+            padding-bottom: 0.75rem;
+        }
+        .component-group {
+            margin-bottom: 1.5rem;
+        }
+        .component-group:last-child {
+            margin-bottom: 0;
+        }
+        .button {
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-right: 0.5rem;
+        }
+        .input-group {
+            margin-top: 1rem;
+        }
+        .input {
+            width: calc(100% - 2rem);
+            padding: 0.75rem 1rem;
+            border: 1px solid #CED4DA;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        .input:focus {
+            outline: none;
+        }
+        .alert {
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+        }
+        
+        /* Theme 1: University Aligned */
+        .theme-1 .palette .primary { background-color: #B92E33; }
+        .theme-1 .palette .secondary { background-color: #333333; }
+        .theme-1 .palette .accent { background-color: #F0F0F0; color: #333; text-shadow: none; }
+        .theme-1 .palette .neutral { background-color: #FFFFFF; color: #333; text-shadow: none; border: 1px solid #ddd;}
+        .theme-1 .components-preview { --primary-color: #B92E33; --secondary-color: #333333; --success-color: #28a745; --error-color: #dc3545;}
+        
+        /* Theme 2: Mountain Majesty */
+        .theme-2 .palette .primary { background-color: #2A4B7C; }
+        .theme-2 .palette .secondary { background-color: #4A6D4D; }
+        .theme-2 .palette .accent { background-color: #A9B2B9; }
+        .theme-2 .palette .neutral { background-color: #F5F5F5; color: #333; text-shadow: none; }
+        .theme-2 .components-preview { --primary-color: #2A4B7C; --secondary-color: #4A6D4D; --success-color: #28a745; --error-color: #dc3545;}
+
+        /* Theme 3: Modern & Calm */
+        .theme-3 .palette .primary { background-color: #5F7388; }
+        .theme-3 .palette .secondary { background-color: #4D8076; }
+        .theme-3 .palette .accent { background-color: #EAE1D7; color: #333; text-shadow: none; }
+        .theme-3 .palette .neutral { background-color: #F8F8F8; color: #333; text-shadow: none; }
+        .theme-3 .components-preview { --primary-color: #5F7388; --secondary-color: #4D8076; --success-color: #28a745; --error-color: #dc3545;}
+
+        /* Component Styles using Vars */
+        .components-preview .btn-primary { background-color: var(--primary-color); color: white; }
+        .components-preview .btn-primary:hover { opacity: 0.85; }
+        .components-preview .btn-secondary { background-color: var(--secondary-color); color: white; }
+        .components-preview .btn-secondary:hover { opacity: 0.85; }
+        .components-preview .input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.25); }
+        .components-preview .alert-success { background-color: var(--success-color); color: white; }
+        .components-preview .alert-error { background-color: var(--error-color); color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Color Theme Visualizer</h1>
+        <p class="intro">Here are three distinct visual directions for the ibe160 chatbot. Review the personality, color palette, and component examples for each theme to decide which one feels right for your project.</p>
+
+        <div class="themes-grid">
+
+            <!-- Theme 1: University Aligned -->
+            <div class="theme-card theme-1">
+                <div class="theme-header">
+                    <h2>1. University Aligned</h2>
+                    <p>Professional, trustworthy, and academic. This theme aligns with the university's existing brand identity, creating a sense of familiarity and authority.</p>
+                </div>
+                <div class="theme-body">
+                    <div class="palette">
+                        <div class="color-swatch primary">Primary<span>#B92E33</span></div>
+                        <div class="color-swatch secondary">Secondary<span>#333333</span></div>
+                        <div class="color-swatch accent">Accent<span>#F0F0F0</span></div>
+                        <div class="color-swatch neutral">Neutral<span>#FFFFFF</span></div>
+                    </div>
+                    <div class="components-preview" style="--primary-rgb: 185, 46, 51;">
+                        <h3>Component Preview</h3>
+                        <div class="component-group">
+                            <button class="button btn-primary">Primary Action</button>
+                            <button class="button btn-secondary">Secondary</button>
+                        </div>
+                        <div class="component-group">
+                            <input type="text" class="input" placeholder="Type your question here...">
+                        </div>
+                        <div class="component-group">
+                            <div class="alert alert-success">Success! Your info was found.</div>
+                            <div class="alert alert-error">Error! Something went wrong.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theme 2: Mountain Majesty -->
+            <div class="theme-card theme-2">
+                <div class="theme-header">
+                    <h2>2. Mountain Majesty</h2>
+                    <p>Calm, inspiring, and natural. Inspired by the Molde panorama, this theme evokes feelings of stability, clarity, and the great outdoors.</p>
+                </div>
+                <div class="theme-body">
+                    <div class="palette">
+                        <div class="color-swatch primary">Primary<span>#2A4B7C</span></div>
+                        <div class="color-swatch secondary">Secondary<span>#4A6D4D</span></div>
+                        <div class="color-swatch accent">Accent<span>#A9B2B9</span></div>
+                        <div class="color-swatch neutral">Neutral<span>#F5F5F5</span></div>
+                    </div>
+                    <div class="components-preview" style="--primary-rgb: 42, 75, 124;">
+                        <h3>Component Preview</h3>
+                        <div class="component-group">
+                            <button class="button btn-primary">Primary Action</button>
+                            <button class="button btn-secondary">Secondary</button>
+                        </div>
+                        <div class="component-group">
+                            <input type="text" class="input" placeholder="Type your question here...">
+                        </div>
+                        <div class="component-group">
+                            <div class="alert alert-success">Success! Your info was found.</div>
+                            <div class="alert alert-error">Error! Something went wrong.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Theme 3: Modern & Calm -->
+            <div class="theme-card theme-3">
+                <div class="theme-header">
+                    <h2>3. Modern & Calm</h2>
+                    <p>Clean, focused, and efficient. A contemporary take, blending professionalism with the tranquility of nature for a modern, user-friendly feel.</p>
+                </div>
+                <div class="theme-body">
+                    <div class="palette">
+                        <div class="color-swatch primary">Primary<span>#5F7388</span></div>
+                        <div class="color-swatch secondary">Secondary<span>#4D8076</span></div>
+                        <div class="color-swatch accent">Accent<span>#EAE1D7</span></div>
+                        <div class="color-swatch neutral">Neutral<span>#F8F8F8</span></div>
+                    </div>
+                    <div class="components-preview" style="--primary-rgb: 95, 115, 136;">
+                        <h3>Component Preview</h3>
+                        <div class="component-group">
+                            <button class="button btn-primary">Primary Action</button>
+                            <button class="button btn-secondary">Secondary</button>
+                        </div>
+                        <div class="component-group">
+                            <input type="text" class="input" placeholder="Type your question here...">
+                        </div>
+                        <div class="component-group">
+                            <div class="alert alert-success">Success! Your info was found.</div>
+                            <div class="alert alert-error">Error! Something went wrong.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

@@ -37,7 +37,7 @@ workflow_status: |
     # Phase 1: Planning
     prd: docs/PRD.md
     create-epics-and-stories: docs/epics.md
-    validate-prd: optional
+    validate-prd: docs/validation-report-2025-11-21-fixed.md
     create-design: conditional
 
     # Phase 2: Solutioning
