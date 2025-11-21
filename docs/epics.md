@@ -1,7 +1,7 @@
 # ibe160 - Epic Breakdown
 
 **Author:** BIP
-**Date:** 2025-11-17
+**Date:** 2025-11-21
 **Project Level:** method
 **Target Scale:** Not specified
 
@@ -18,7 +18,7 @@ The project is broken down into the following epics:
 *   **Epic 3: Conversational Intelligence & User Experience:** Enhances the chatbot's conversational abilities and user experience.
 *   **Epic 4: Deployment & Integration:** Handles deployment, integration with the university website, and NFR testing.
 
-We have successfully broken down the PRD into 4 epics and 16 stories. Each story follows the BDD format with clear acceptance criteria and technical notes. The epics are sequenced to deliver incremental value, with Epic 1 laying the essential foundation.
+We have successfully broken down the PRD into 4 epics and 17 stories. Each story follows the BDD format with clear acceptance criteria and technical notes. The epics are sequenced to deliver incremental value, with Epic 1 laying the essential foundation.
 
 ---
 
@@ -33,6 +33,8 @@ Establish the foundational infrastructure and deliver the most basic, end-to-end
 As a developer,
 I want to set up the project structure and core dependencies,
 So that I have a foundation for building the application.
+
+**Covers:** Foundational for all FRs
 
 **Acceptance Criteria:**
 
@@ -53,6 +55,8 @@ As a user,
 I want to see a basic chat interface,
 So that I can interact with the chatbot.
 
+**Covers:** FR-003
+
 **Acceptance Criteria:**
 
 **Given** the application is running,
@@ -70,6 +74,8 @@ As a user,
 I want to receive a simple, hardcoded response from the chatbot,
 So that I can confirm the chat functionality is working.
 
+**Covers:** FR-003
+
 **Acceptance Criteria:**
 
 **Given** I have sent a message to the chatbot,
@@ -85,6 +91,8 @@ So that I can confirm the chat functionality is working.
 As a developer,
 I want to set up a basic deployment pipeline,
 So that I can automatically deploy the application.
+
+**Covers:** FR-001
 
 **Acceptance Criteria:**
 
@@ -107,6 +115,8 @@ As a developer,
 I want to configure Supabase with `pgvector` for storing document embeddings,
 So that the chatbot can perform efficient similarity searches.
 
+**Covers:** FR-002
+
 **Acceptance Criteria:**
 
 **Given** a Supabase project,
@@ -123,6 +133,8 @@ So that the chatbot can perform efficient similarity searches.
 As a developer,
 I want to build a web scraper that extracts content from specified university website URLs,
 So that the content can be used to build the chatbot's knowledge base.
+
+**Covers:** FR-002
 
 **Acceptance Criteria:**
 
@@ -141,6 +153,8 @@ As a developer,
 I want to process extracted website content by chunking it and generating embeddings using Google Gemini 2.5 Pro,
 So that the content can be stored in the vector database for RAG.
 
+**Covers:** FR-002
+
 **Acceptance Criteria:**
 
 **Given** cleaned text content,
@@ -158,6 +172,8 @@ So that the content can be stored in the vector database for RAG.
 As a developer,
 I want to integrate the vector database with the FastAPI backend to perform basic RAG,
 So that the chatbot can retrieve relevant information based on user queries.
+
+**Covers:** FR-002
 
 **Acceptance Criteria:**
 
@@ -181,6 +197,8 @@ As a user,
 I want the chatbot to ask clarifying questions when my query is ambiguous,
 So that I can get more precise answers.
 
+**Covers:** FR-004
+
 **Acceptance Criteria:**
 
 **Given** I ask an ambiguous question (e.g., "Tell me about business"),
@@ -197,6 +215,8 @@ So that I can get more precise answers.
 As a user,
 I want the chatbot to combine and summarize information from multiple sources,
 So that I get a comprehensive answer without having to visit many pages.
+
+**Covers:** FR-005
 
 **Acceptance Criteria:**
 
@@ -215,6 +235,8 @@ As a user,
 I want to see the original source URLs for the chatbot's answers,
 So that I can verify the information and explore further.
 
+**Covers:** FR-006
+
 **Acceptance Criteria:**
 
 **Given** the chatbot provides an answer,
@@ -232,6 +254,8 @@ As a user,
 I want to provide feedback on my chatbot experience,
 So that the system can be improved.
 
+**Covers:** FR-008
+
 **Acceptance Criteria:**
 
 **Given** a conversation has ended,
@@ -243,6 +267,25 @@ So that the system can be improved.
 
 **Technical Notes:** Frontend UI for feedback, FastAPI endpoint to store feedback in Supabase.
 
+### Story 3.5: Escalation to Human Contact
+
+As a user,
+I want to be directed to a human contact when the chatbot cannot answer my question,
+So that I have a clear path to get the help I need.
+
+**Covers:** FR-007
+
+**Acceptance Criteria:**
+
+**Given** the chatbot has failed to answer my query after a reasonable number of attempts,
+**When** it cannot find a relevant answer,
+**Then** it provides a clear and direct link to the university's contact page.
+
+**Prerequisites:** Story 1.2
+
+**Technical Notes:** Frontend UI to display the link, logic in FastAPI to detect when to escalate.
+
+
 ## Epic 4: Deployment & Integration
 
 Make the chatbot publicly available and accessible to users.
@@ -252,6 +295,8 @@ Make the chatbot publicly available and accessible to users.
 As a developer,
 I want to deploy the application to a production environment,
 So that it is publicly accessible.
+
+**Covers:** FR-001
 
 **Acceptance Criteria:**
 
@@ -270,6 +315,8 @@ As a user,
 I want to easily find and access the chatbot from the university website,
 So that I can get help quickly.
 
+**Covers:** Integration
+
 **Acceptance Criteria:**
 
 **Given** the chatbot is deployed,
@@ -287,6 +334,8 @@ As a developer,
 I want to test the performance and scalability of the deployed application,
 So that I can ensure it meets the non-functional requirements.
 
+**Covers:** NFR
+
 **Acceptance Criteria:**
 
 **Given** the application is deployed to production,
@@ -302,6 +351,8 @@ So that I can ensure it meets the non-functional requirements.
 As a developer,
 I want to audit the chatbot's accessibility,
 So that I can ensure it complies with WCAG 2.1 AA standards.
+
+**Covers:** NFR
 
 **Acceptance Criteria:**
 
