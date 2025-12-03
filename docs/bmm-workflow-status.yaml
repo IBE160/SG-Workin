@@ -42,8 +42,8 @@ workflow_status: |
 
     # Phase 2: Solutioning
     create-architecture: docs/architecture.md
-    validate-architecture: optional
-    solutioning-gate-check: recommended
+    validate-architecture: docs/validation-report-architecture-2025-12-03-rerun.md
+    solutioning-gate-check: docs/implementation-readiness-report-2025-12-03.md
 
     # Phase 3: Implementation
     sprint-planning: required
