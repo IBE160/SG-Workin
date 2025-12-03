@@ -48,7 +48,7 @@ input_file_patterns:
 # Module path and component files
 installed_path: "{project-root}/.bmad/bmm/workflows/2-plan-workflows/create-ux-design"
 instructions: "{installed_path}/instructions.md"
-validation: "{installed_path}/checklist.md"
+validation: "{output_folder}/validation-report-2025-11-21-fixed.md"
 template: "{installed_path}/ux-design-template.md"
 
 # Output configuration - Progressive saves throughout workflow
