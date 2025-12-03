@@ -77,4 +77,4 @@
 
 ## BMAD workflow
 
-<img src="images/bmad-workflow.svg" alt="BMAD workflow">
+<img src="images/bmad-workflow.svg" alt="BMAD workflow"> 
