@@ -1,0 +1,7 @@
+current_sprint: 2
+status: 'planned'
+sprint_goal: "Implement the foundational elements of the chat interface to enable basic user interaction."
+stories_in_sprint:
+  - id: "1-2-basic-chat-interface"
+    status: "in-progress"
+impediments: []
