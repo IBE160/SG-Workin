@@ -1,6 +1,7 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import chat
+from routers import chat, messages
 
 app = FastAPI()
 
@@ -9,6 +10,10 @@ origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
+
+allowed_origins_env = os.getenv("ALLOWED_ORIGINS")
+if allowed_origins_env:
+    origins.extend([origin.strip() for origin in allowed_origins_env.split(",")])
 
 app.add_middleware(
     CORSMiddleware,
@@ -19,8 +24,13 @@ app.add_middleware(
 )
 
 app.include_router(chat.router, prefix="/api")
+app.include_router(messages.router, prefix="/api")
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
 
 @app.get("/")
 def read_root():
-    return {"message": "Hello World"}
+    return {"message": "Hello from Backend!"}
 

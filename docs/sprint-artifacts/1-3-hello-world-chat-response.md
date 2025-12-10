@@ -1,6 +1,6 @@
 # Story 1.3: "Hello World" Chat Response
 
-Status: Ready for Review
+Status: Done
 
 ## Story
 
@@ -15,12 +15,13 @@ So that I can confirm the chat functionality is working.
 ## Tasks / Subtasks
 
 - [x] Task 1: Create Backend API Endpoint (AC: #1)
-  - [x] Subtask 1.1: Create `apps/api/app/routers/chat.py` with a `POST /chat` endpoint.
+  - [x] Subtask 1.1: Create `apps/api/app/routers/messages.py` with a `POST /messages` endpoint.
   - [x] Subtask 1.2: Implement the endpoint to accept a message payload and return the hardcoded response: "Hello! I am the university chatbot. How can I help you today?".
   - [x] Subtask 1.3: Register the router in `apps/api/app/main.py`.
-  - [x] Subtask 1.4: Validation - Test endpoint via Swagger UI (usually at `/docs`) or `curl`.
+  - [x] Subtask 1.4: Implement a unit test in `apps/api/app/tests/test_messages.py` to verify the endpoint returns the correct response.
+  - [x] Subtask 1.5: Validation - Verify tests pass (`pytest`) and check endpoint via Swagger UI.
 - [x] Task 2: Connect Frontend to Backend (AC: #1)
-  - [x] Subtask 2.1: Update `ChatWindow.tsx` (or `ChatInput.tsx` depending on state ownership) to call `POST /api/chat` when "Send" is clicked.
+  - [x] Subtask 2.1: Update `ChatWindow.tsx` (or `ChatInput.tsx`) to call `POST /messages` using the `NEXT_PUBLIC_API_URL` environment variable.
   - [x] Subtask 2.2: Handle the response and add the bot's message to the chat history state.
   - [x] Subtask 2.3: Verify the full flow: Type "Hi" -> Click Send -> See "Hello! ..." response in UI.
 
@@ -31,20 +32,21 @@ So that I can confirm the chat functionality is working.
     - **API Contract:**
         - Request: JSON `{ "message": "string" }` (Define Pydantic model if good practice, or simple dict for MVP).
         - Response: Standard Wrapper `{ "status": "success", "data": { "response": "Hello! ..." } }`.
-    - **Frontend:** Use `fetch` or a utility wrapping fetch to hit the backend. Ensure CORS is configured if running on different ports (Next.js rewrites may be needed or FastAPI CORS middleware).
+    - **Frontend:** Use `fetch` or a utility wrapping fetch to hit the backend. Use `NEXT_PUBLIC_API_URL` to avoid hardcoding the backend URL. Ensure CORS is configured.
 - **UX Requirements:**
     - Bot message should appear in the "Bot bubble" styling (Left aligned, Neutral background).
 - **Source tree components to touch:**
-    - `apps/api/app/routers/chat.py` (New)
+    - `apps/api/app/routers/messages.py` (New)
     - `apps/api/app/main.py`
     - `apps/web/components/modules/chat/ChatWindow.tsx`
 - **Testing standards summary:**
-    - Manual verification via UI and Swagger.
+    - Unit tests required for new endpoint (`pytest`).
+    - Manual verification via UI.
 
 ### Project Structure Notes
 
 - **API Organization:** Routers should be in `apps/api/app/routers`.
-- **Naming:** Endpoint `/chat` fits the resource.
+- **Naming:** Endpoint `/messages` fits the resource (sending a message).
 
 ### References
 
@@ -63,8 +65,19 @@ Google Gemini 2.0 Flash Experimental
 
 ### Completion Notes List
 
-- Implemented backend API and frontend integration.
-- Fixed CORS/IPv6 issue by using 127.0.0.1.
-- Addressed Code Review: Fixed test consistency, added docstrings, fixed git tracking.
+- Implemented `POST /messages` endpoint in `backend/routers/messages.py`.
+- Registered router in `backend/main.py`.
+- Verified with unit tests in `backend/tests/test_messages.py`.
+- Updated `frontend/app/page.tsx` to use `NEXT_PUBLIC_API_URL` and call `/messages` endpoint.
+- NOTE: Mapped story paths `apps/api` -> `backend` and `apps/web` -> `frontend` to match actual project structure.
 
 ### File List
+
+- backend/routers/messages.py
+- backend/tests/test_messages.py
+- backend/main.py
+- backend/pyproject.toml
+- backend/tests/__init__.py
+- backend/core/constants.py
+- backend/uv.lock
+- frontend/app/page.tsx
