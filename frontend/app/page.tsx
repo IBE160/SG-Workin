@@ -1,58 +1,58 @@
-import { DeployButton } from "@/components/deploy-button";
-import { EnvVarWarning } from "@/components/env-var-warning";
-import { AuthButton } from "@/components/auth-button";
-import { Hero } from "@/components/hero";
-import { ThemeSwitcher } from "@/components/theme-switcher";
-import { ConnectSupabaseSteps } from "@/components/tutorial/connect-supabase-steps";
-import { SignUpUserSteps } from "@/components/tutorial/sign-up-user-steps";
-import { hasEnvVars } from "@/lib/utils";
-import Link from "next/link";
-import { Suspense } from "react";
+"use client"
+
+import { ChatWindow, Message } from '@/components/modules/chat/ChatWindow'
+import { ChatInput } from '@/components/modules/chat/ChatInput'
+import { useState } from 'react'
 
 export default function Home() {
-  return (
-    <main className="min-h-screen flex flex-col items-center">
-      <div className="flex-1 w-full flex flex-col gap-20 items-center">
-        <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-          <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-            <div className="flex gap-5 items-center font-semibold">
-              <Link href={"/"}>Next.js Supabase Starter</Link>
-              <div className="flex items-center gap-2">
-                <DeployButton />
-              </div>
-            </div>
-            {!hasEnvVars ? (
-              <EnvVarWarning />
-            ) : (
-              <Suspense>
-                <AuthButton />
-              </Suspense>
-            )}
-          </div>
-        </nav>
-        <div className="flex-1 flex flex-col gap-20 max-w-5xl p-5">
-          <Hero />
-          <main className="flex-1 flex flex-col gap-6 px-4">
-            <h2 className="font-medium text-xl mb-4">Next steps</h2>
-            {hasEnvVars ? <SignUpUserSteps /> : <ConnectSupabaseSteps />}
-          </main>
-        </div>
+  const [messages, setMessages] = useState<Message[]>([])
+  const [isLoading, setIsLoading] = useState(false)
 
-        <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-16">
-          <p>
-            Powered by{" "}
-            <a
-              href="https://supabase.com/?utm_source=create-next-app&utm_medium=template&utm_term=nextjs"
-              target="_blank"
-              className="font-bold hover:underline"
-              rel="noreferrer"
-            >
-              Supabase
-            </a>
-          </p>
-          <ThemeSwitcher />
-        </footer>
+  const handleSendMessage = async (text: string) => {
+    // Add user message immediately
+    const userMsg: Message = { role: 'user', content: text }
+    setMessages(prev => [...prev, userMsg])
+    setIsLoading(true)
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: text }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok')
+      }
+
+      const data = await response.json()
+      // data.data.response contains the bot's text
+      const botMsg: Message = { role: 'assistant', content: data.data.response }
+      setMessages(prev => [...prev, botMsg])
+    } catch (error) {
+      console.error('Error sending message:', error)
+      const errorMsg: Message = { role: 'assistant', content: 'Sorry, something went wrong.' }
+      setMessages(prev => [...prev, errorMsg])
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
+        <h1 className="text-4xl font-bold text-center w-full mb-8">Chat</h1>
+      </div>
+
+      <ChatWindow messages={messages} />
+
+      <div className="fixed bottom-0 left-0 w-full p-4 bg-background border-t">
+        <div className="max-w-5xl mx-auto">
+          <ChatInput onSend={handleSendMessage} isLoading={isLoading} />
+        </div>
       </div>
     </main>
-  );
+  )
 }
