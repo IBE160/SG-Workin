@@ -1,0 +1,28 @@
+pic-1: contexted
+  1-1-project-setup-infrastructure-initialization: done
+  1-2-basic-chat-interface: in-progress
+  1-3-hello-world-chat-response: backlog
+  1-4-basic-deployment-pipeline: backlog
+  epic-1-retrospective: optional
+
+  epic-2: backlog
+  2-1-supabase-vector-database-setup: backlog
+  2-2-university-website-scraper: backlog
+  2-3-document-chunking-and-embedding: backlog
+  2-4-basic-rag-pipeline-integration: backlog
+  epic-2-retrospective: optional
+
+  epic-3: backlog
+  3-1-interactive-guidance-implementation: backlog
+  3-2-information-synthesis-summarization: backlog
+  3-3-source-referencing-display: backlog
+  3-4-user-satisfaction-feedback-mechanism: backlog
+  3-5-escalation-to-human-contact: backlog
+  epic-3-retrospective: optional
+
+  epic-4: backlog
+  4-1-production-deployment: backlog
+  4-2-university-website-integration: backlog
+  4-3-performance-scalability-testing: backlog
+  4-4-accessibility-audit: backlog
+  epic-4-retrospective: optional
