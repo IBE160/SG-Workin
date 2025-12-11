@@ -29,6 +29,8 @@ from routers import scraper
 app.include_router(scraper.router, prefix="/api")
 from routers import ingestion
 app.include_router(ingestion.router, prefix="/api")
+from routers import feedback
+app.include_router(feedback.router, prefix="/api")
 
 @app.get("/health")
 def health_check():
