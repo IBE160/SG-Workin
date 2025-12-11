@@ -1,10 +1,15 @@
+import logging
 import google.generativeai as genai
 from supabase import create_client, Client
 from backend.core.config import settings
 from tenacity import retry, stop_after_attempt, wait_exponential
+from backend.schemas.chat import ChatMessage
+
+logger = logging.getLogger(__name__)
 
 class RagService:
     def __init__(self):
+        # Configuration should ideally be done in main/lifespan, but staying scopes:
         genai.configure(api_key=settings.GOOGLE_API_KEY)
         self.supabase: Client = create_client(settings.SUPABASE_URL, settings.SUPABASE_SERVICE_ROLE_KEY)
         self.embedding_model = "models/text-embedding-004"
@@ -44,21 +49,54 @@ class RagService:
 
         context_text = "\n\n".join([chunk.get('content', '') for chunk in context_chunks])
         
-        prompt = (
-            "You are a helpful assistant for University of Molde (HiMolde). "
-            "Answer the query based ONLY on the following context. "
-            "If the answer is not in the context, say you don't know.\n\n"
-            f"Context:\n{context_text}\n\n"
-            f"Query: {query}"
+        prompt = settings.RAG_SYSTEM_PROMPT.format(
+            context_text=context_text,
+            query=query
         )
 
         try:
             # Using Gemini 2.0 Flash as per Story/Test intent (assuming verified model)
             # If fails, could fallback to gemini-1.5-flash
-            model = genai.GenerativeModel("gemini-2.0-flash-exp")
+            model = genai.GenerativeModel(settings.GEMINI_MODEL) # Use configured model
             response = model.generate_content(prompt)
             return response.text
         except Exception as e:
-            # Log error?
-            return "I'm having trouble connecting to my knowledge base right now."
+            logger.error(f"Error generating answer: {e}")
+            return f"Error generating answer: {e}"
 
+    def detect_ambiguity(self, query: str) -> dict:
+        """Check if query is ambiguous and return clarification if needed."""
+        prompt = settings.AMBIGUITY_SYSTEM_PROMPT.format(query=query)
+        
+        try:
+            model = genai.GenerativeModel(settings.GEMINI_MODEL) # Use configured model
+            response = model.generate_content(prompt, generation_config={"response_mime_type": "application/json"})
+            import json
+            return json.loads(response.text)
+        except Exception as e:
+            logger.warning(f"Ambiguity check failed: {e}")
+            return {"is_ambiguous": False}
+
+    def contextualize_query(self, query: str, history: list[ChatMessage]) -> str:
+        """Rewrite query to be self-contained based on history."""
+        if not history:
+            return query
+            
+        # Format history for prompt
+        history_text = "\n".join([f"{msg.role}: {msg.content}" for msg in history])
+        
+        prompt = settings.CONTEXTUALIZE_SYSTEM_PROMPT.format(
+            history=history_text,
+            query=query
+        )
+        
+        try:
+            model = genai.GenerativeModel(settings.GEMINI_MODEL)
+            # Generate the rewritten query
+            response = model.generate_content(prompt)
+            rewritten = response.text.strip()
+            logger.info(f"Contextualized Query: '{query}' -> '{rewritten}'")
+            return rewritten
+        except Exception as e:
+            logger.error(f"Contextualization failed: {e}")
+            return query
