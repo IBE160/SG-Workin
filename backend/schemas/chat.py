@@ -11,6 +11,7 @@ class ChatRequest(BaseModel):
 
 class ChatResponseData(BaseModel):
     response: str
+    sources: list[str] = [] # List of source URLs
     type: str = "answer" # answer | clarification
 
 class ChatResponse(BaseModel):

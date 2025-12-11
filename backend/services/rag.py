@@ -100,3 +100,20 @@ class RagService:
         except Exception as e:
             logger.error(f"Contextualization failed: {e}")
             return query
+
+    def extract_sources(self, chunks: list[dict]) -> list[str]:
+        """Extract unique URLs from chunks."""
+        if not chunks:
+            return []
+        
+        # Extract 'url' from chunks, remove duplicates while preserving order (roughly)
+        urls = []
+        seen = set()
+        
+        for chunk in chunks:
+            url = chunk.get("url")
+            if url and url not in seen:
+                seen.add(url)
+                urls.append(url)
+        
+        return urls

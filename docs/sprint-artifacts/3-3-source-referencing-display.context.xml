@@ -1,0 +1,25 @@
+<story_context>
+    <story_id>3-3</story_id>
+    <story_name>source-referencing-display</story_name>
+    <story_file>docs/sprint-artifacts/3-3-source-referencing-display.md</story_file>
+    <status>todo</status>
+    
+    <files>
+        <file path="backend/services/rag.py">
+            <reason>Will be updated to extract source URLs from retrieval chunks.</reason>
+        </file>
+        <file path="backend/routers/chat.py">
+            <reason>Will be updated to pass source URLs in the response.</reason>
+        </file>
+        <file path="backend/schemas/chat.py">
+            <reason>Will be updated to include 'sources' field in response schema.</reason>
+        </file>
+    </files>
+
+    <implementation_notes>
+        The implementation involves:
+        1. Modifying `RagService.search_similar_chunks` or `generate_answer` to return chunk metadata.
+        2. Updating `ChatResponseData` in `schemas/chat.py` to include a `sources` list.
+        3. Populating this list in `ChatRouter`.
+    </implementation_notes>
+</story_context>

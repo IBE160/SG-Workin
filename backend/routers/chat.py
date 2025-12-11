@@ -36,11 +36,13 @@ async def chat(request: ChatRequest, rag_service: RagService = Depends(get_rag_s
         # 3. Generate answer
         # We pass the rewritten query so the answer generation also benefits from the resolved context
         response_text = rag_service.generate_answer(current_query, chunks)
+        sources = rag_service.extract_sources(chunks)
 
         return ChatResponse(
             status="success",
             data=ChatResponseData(
                 response=response_text,
+                sources=sources,
                 type="answer"
             )
         )
