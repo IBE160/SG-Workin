@@ -38,6 +38,7 @@ def apply_migration():
         # Let's try executing the whole block.
         try:
             connection.execute(text(sql))
+            connection.execute(text("NOTIFY pgrst, 'reload schema'"))
             connection.commit()
             print("Migration applied successfully.")
         except Exception as e:

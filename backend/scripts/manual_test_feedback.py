@@ -18,9 +18,13 @@ def test_feedback():
         # Ideally we use TestClient to avoid needing running server
         # Let's import TestClient
         from fastapi.testclient import TestClient
+        from fastapi.testclient import TestClient
         import os
+        # Add backend to path (parent)
         sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        from main import app
+        # Add project root to path (grandparent)
+        sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+        from backend.main import app
         
         client = TestClient(app)
         
@@ -36,7 +40,8 @@ def test_feedback():
             print(f"Error: {response.text}")
             sys.exit(1)
 
-    except ImportError:
+    except ImportError as e:
+        print(f"ImportError: {e}")
         print("FastAPI TestClient not found. Please install httpx.")
     except Exception as e:
         print(f"Error: {e}")
