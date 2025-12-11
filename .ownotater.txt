@@ -1,3 +1,53 @@
+foreach epic in sprint planning:
+    
+    /run-agent-task sm create-epic-tech-context {prompt / user-input-file}
+    file: sprint-artifacts/tech-spec-epic-{{epic_id}}.md
+
+    /run-agent-task sm validate-epic-tech-context {prompt / user-input-file}
+    
+    foreach story in epic:
+    
+
+    SCRUM MASTER
+    /run-agent-task sm *create-story {prompt / user-input-file}
+    file: sprint-artifacts/{{story_key}}.md
+    
+    /run-agent-task sm *validate-create-story {prompt / user-input-file}
+
+    
+    /run-agent-task sm *create-story-context {prompt / user-input-file}
+    File: sprint-artifacts/{{story_key}}.context.xml
+    
+    /run-agent-task sm *validate-story-context {prompt / user-input-file}
+    
+    /run-agent-task sm *story-ready-for-dev {prompt / user-input-file} while code-review != approved:
+    
+
+
+    DEVELOPER  
+    /run-agent-task dev *develop-story {prompt / user-input-file}
+    
+    /run-agent-task dev *code-review {prompt / user-input-file}
+    
+    /run-agent-task dev *story-done {prompt / user-input-file}
+    
+    
+    SCRUM MASTER UNØDVENDIG? finnes ikke i oppdatert beta?
+    /run-agent-task sm *test-review {prompt / user-input-file}
+    
+
+    After Epic Complete
+    /run-agent-task sm *epic-retrospective {prompt / user-input-file}
+
+
+
+
+
+
+
+
+
+
 pic-1: contexted
   1-1-project-setup-infrastructure-initialization: done
   1-2-basic-chat-interface: in-progress
@@ -26,3 +76,42 @@ pic-1: contexted
   4-3-performance-scalability-testing: backlog
   4-4-accessibility-audit: backlog
   epic-4-retrospective: optional
+
+10.12.2025
+14:24
+Start dev
+ 2 Execute Dev Story workflow (*develop-story)
+
+    I'm unable to find the story file 1-2-basic-chat-interface.md.
+
+According to sprint-status.yaml (found in .bmad-ephemeral), this story is in-progress.
+
+docs/stories is empty.
+.bmad-ephemeral/stories contains 1-1 but not 1-2.
+Recursive search yielded no results.
+Please provide the full path to the story file or create it.
+
+fortsetter med sm Agent
+
+10.12.2025
+14:26
+Create a Draft Story (*create-story)
+
+Laster  dev 
+    kjører develop
+
+    kjører Code Review Workflow
+
+    kjører Story Done Workflow
+
+
+
+
+ca. 23:10
+*validate-story-context 2-1
+
+klar for dev 2-1
+
+
+
+

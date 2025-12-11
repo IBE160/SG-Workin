@@ -1,7 +1,9 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
+from backend.services.rag import RagService
 
 router = APIRouter()
+rag_service = RagService()
 
 class ChatRequest(BaseModel):
     message: str
@@ -16,12 +18,17 @@ class ChatResponse(BaseModel):
 @router.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
     """
-    Handle chat messages.
-    Returns a hardcoded 'Hello World' response for now.
+    Handle chat messages using RAG pipeline.
     """
+    # 1. Retrieve context
+    chunks = await rag_service.search_similar_chunks(request.message)
+    
+    # 2. Generate answer
+    response_text = rag_service.generate_answer(request.message, chunks)
+
     return ChatResponse(
         status="success",
         data=ChatResponseData(
-            response="Hello! I am the university chatbot. How can I help you today?"
+            response=response_text
         )
     )

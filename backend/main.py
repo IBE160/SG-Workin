@@ -25,6 +25,10 @@ app.add_middleware(
 
 app.include_router(chat.router, prefix="/api")
 app.include_router(messages.router, prefix="/api")
+from routers import scraper
+app.include_router(scraper.router, prefix="/api")
+from routers import ingestion
+app.include_router(ingestion.router, prefix="/api")
 
 @app.get("/health")
 def health_check():
