@@ -49,11 +49,15 @@ class IngestionService:
                     chunk = text[start:end]
 
             chunks.append(chunk)
-            start += len(chunk) - self.CHUNK_OVERLAP
-            
-            # Prevent infinite loop if overlap >= size (shouldn't happen with constants but good safety)
-            if len(chunk) <= self.CHUNK_OVERLAP:
-                 start += 1 
+
+            # If we reached the end of the text, break
+            if end >= text_len:
+                break
+                
+            # Move start forward
+            # Ensure we always move forward at least 1 char to avoid infinite loop
+            step = max(1, len(chunk) - self.CHUNK_OVERLAP)
+            start += step
 
         return chunks
 

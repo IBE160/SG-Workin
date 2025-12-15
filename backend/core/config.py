@@ -38,6 +38,8 @@ Ensure the clarifying question is polite and helps narrow down their intent (e.g
 Output ONLY valid JSON.
 """
 
+    ESCALATION_LINK: str = "https://www.himolde.no/om/kontakt/"
+
     CONTEXTUALIZE_SYSTEM_PROMPT: str = """You are a helpful assistant for University of Molde.
 Your task is to rewrite the user's latest query to be self-contained, based on the conversation history.
 The user might ask a follow-up question that depends on previous context.

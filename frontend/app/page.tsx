@@ -30,11 +30,16 @@ export default function Home() {
 
       const data = await response.json()
       // data.data.response contains the bot's text
-      const botMsg: Message = { role: 'assistant', content: data.data.response }
+      const botMsg: Message = {
+        role: 'assistant',
+        content: data.data.response,
+        type: data.data.type,
+        escalationLink: data.data.escalation_link
+      }
       setMessages(prev => [...prev, botMsg])
     } catch (error) {
       console.error('Error sending message:', error)
-      const errorMsg: Message = { role: 'assistant', content: 'Sorry, something went wrong.' }
+      const errorMsg: Message = { role: 'assistant', content: 'Sorry, something went wrong. Please try again later.' }
       setMessages(prev => [...prev, errorMsg])
     } finally {
       setIsLoading(false)

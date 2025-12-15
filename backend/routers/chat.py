@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from backend.services.rag import RagService
 from backend.schemas.chat import ChatRequest, ChatResponse, ChatResponseData
+from backend.core.config import settings
 
 router = APIRouter()
 
@@ -33,6 +34,16 @@ async def chat(request: ChatRequest, rag_service: RagService = Depends(get_rag_s
         # 2. Retrieve context (if specific)
         chunks = await rag_service.search_similar_chunks(current_query)
         
+        if not chunks:
+            return ChatResponse(
+                status="success",
+                data=ChatResponseData(
+                    response="I apologize, but I couldn't find any relevant information in my knowledge base to answer your specific question.",
+                    type="escalation",
+                    escalation_link=settings.ESCALATION_LINK
+                )
+            )
+
         # 3. Generate answer
         # We pass the rewritten query so the answer generation also benefits from the resolved context
         response_text = rag_service.generate_answer(current_query, chunks)

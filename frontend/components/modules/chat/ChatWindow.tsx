@@ -1,6 +1,8 @@
 export interface Message {
     role: 'user' | 'assistant'
     content: string
+    type?: 'answer' | 'clarification' | 'escalation'
+    escalationLink?: string
 }
 
 interface ChatWindowProps {
@@ -15,11 +17,24 @@ export function ChatWindow({ messages }: ChatWindowProps) {
                     <div
                         key={idx}
                         className={`flex w-max max-w-[75%] flex-col gap-2 rounded-lg px-3 py-2 text-sm ${msg.role === 'user'
-                                ? "ml-auto bg-primary text-primary-foreground"
-                                : "bg-muted text-muted-foreground self-start"
+                            ? "ml-auto bg-primary text-primary-foreground"
+                            : "bg-muted text-muted-foreground self-start"
                             }`}
                     >
                         {msg.content}
+                        {msg.type === 'escalation' && msg.escalationLink && (
+                            <div className="mt-2 p-3 bg-background rounded border border-border">
+                                <p className="text-sm font-medium mb-1">Need more help?</p>
+                                <a
+                                    href={msg.escalationLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-primary hover:underline text-sm flex items-center gap-1"
+                                >
+                                    Contact Support via University Website ↗
+                                </a>
+                            </div>
+                        )}
                     </div>
                 ))}
                 {messages.length === 0 && (

@@ -48,12 +48,12 @@ development_status:
   3-1-interactive-guidance-implementation: done
   3-2-information-synthesis-summarization: done
   3-3-source-referencing-display: done
-  3-4-user-satisfaction-feedback-mechanism: in-progress
-  3-5-escalation-to-human-contact: backlog
-  epic-3-retrospective: optional
+  3-4-user-satisfaction-feedback-mechanism: done
+  3-5-escalation-to-human-contact: done
+  epic-3-retrospective: done
 
-  epic-4: backlog
-  4-1-production-deployment: backlog
+  epic-4: in-progress
+  4-1-production-deployment: done
   4-2-university-website-integration: backlog
   4-3-performance-scalability-testing: backlog
   4-4-accessibility-audit: backlog

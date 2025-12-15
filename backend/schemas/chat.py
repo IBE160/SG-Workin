@@ -12,7 +12,8 @@ class ChatRequest(BaseModel):
 class ChatResponseData(BaseModel):
     response: str
     sources: list[str] = [] # List of source URLs
-    type: str = "answer" # answer | clarification
+    escalation_link: Optional[str] = None
+    type: str = "answer" # answer | clarification | escalation
 
 class ChatResponse(BaseModel):
     status: str
