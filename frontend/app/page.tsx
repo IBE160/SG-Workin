@@ -21,7 +21,7 @@ export default function Home() {
     setIsLoading(true)
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api'
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || '/api'
       // Convert history to format expected by backend (excluding current message)
       const history = messages.map(m => ({
         role: m.role,
@@ -68,7 +68,7 @@ export default function Home() {
 
   const handleEndChatSubmit = async (score: number, comment: string, email: string) => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api'
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || '/api'
 
       // Prepare chat history for transcript
       const history = messages.map(m => ({
