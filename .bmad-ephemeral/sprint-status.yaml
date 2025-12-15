@@ -37,20 +37,20 @@ development_status:
   1-4-basic-deployment-pipeline: done
   epic-1-retrospective: completed
 
-  epic-2: in-progress
+  epic-2: done
   2-1-supabase-vector-database-setup: done
   2-2-university-website-scraper: done
   2-3-document-chunking-and-embedding: done
   2-4-basic-rag-pipeline-integration: done
   epic-2-retrospective: completed
 
-  epic-3: in-progress
+  epic-3: done
   3-1-interactive-guidance-implementation: done
   3-2-information-synthesis-summarization: done
   3-3-source-referencing-display: done
   3-4-user-satisfaction-feedback-mechanism: done
   3-5-escalation-to-human-contact: done
-  epic-3-retrospective: done
+  epic-3-retrospective: completed
 
   epic-4: in-progress
   4-1-production-deployment: done

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, BackgroundTasks
-from services.ingestion import IngestionService
+from backend.services.ingestion import IngestionService
 from pydantic import BaseModel
 from typing import Dict, Any
 

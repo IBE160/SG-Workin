@@ -3,11 +3,16 @@ import os
 import logging
 import time
 
-# Add backend to path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Add project root to sys.path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-from services.ingestion import IngestionService
-from services.scraper import ScraperService
+from dotenv import load_dotenv
+# Explicitly load .env from backend directory
+env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), '.env')
+load_dotenv(env_path)
+
+from backend.services.ingestion import IngestionService
+from backend.services.scraper import ScraperService
 
 # Setup Logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -21,8 +26,8 @@ def run_ingestion():
     logger.info("📡 Step 1: Scraping University Website...")
     scraper = ScraperService()
     try:
-        programs = scraper.scrape_all_programs()
-        logger.info(f"✅ Scraped {len(programs)} programs.")
+        programs = scraper.scrape_everything()
+        logger.info(f"✅ Scraped {len(programs)} documents.")
     except Exception as e:
         logger.error(f"❌ Scraping failed: {e}")
         return

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, BackgroundTasks
-from services.scraper import ScraperService
+from backend.services.scraper import ScraperService
 from pydantic import BaseModel
 from typing import List, Optional
 

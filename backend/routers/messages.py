@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
-from core.constants import WELCOME_MESSAGE
+from backend.core.constants import WELCOME_MESSAGE
 
 router = APIRouter()
 

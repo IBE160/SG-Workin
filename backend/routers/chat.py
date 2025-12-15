@@ -3,6 +3,10 @@ from backend.services.rag import RagService
 from backend.schemas.chat import ChatRequest, ChatResponse, ChatResponseData
 from backend.core.config import settings
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 router = APIRouter()
 
 def get_rag_service():
@@ -31,19 +35,27 @@ async def chat(request: ChatRequest, rag_service: RagService = Depends(get_rag_s
                 )
             )
 
-        # 2. Retrieve context (if specific)
-        chunks = await rag_service.search_similar_chunks(current_query)
+        # 2. Retrieve context (Dynamic Limit)
+        # Verify if user wants a comprehensive list (Global discovery)
+        # We removed "hvilke fag"/"which courses" as they often appear in specific questions (e.g. "which subjects are in IT?")
+        # Re-adding specific phrasing that implies a full list is needed to ensure Structure chunks are retrieved.
+        list_keywords = [
+            "list all", "list alle", "oversikt", 
+            "hvilke programmer har dere", "hvilke studier har dere", 
+            "what programs do you have", "alle studier", "alle programmer",
+            "hvilke fag", "hvilke emner", "which courses", "what courses", "course list", "fagliste",
+            "årsstudier", "year studies", "bachelor", "master", "phd"
+        ]
+        is_list_query = any(kw in current_query.lower() for kw in list_keywords)
         
-        if not chunks:
-            return ChatResponse(
-                status="success",
-                data=ChatResponseData(
-                    response="I apologize, but I couldn't find any relevant information in my knowledge base to answer your specific question.",
-                    type="escalation",
-                    escalation_link=settings.ESCALATION_LINK
-                )
-            )
+        # INCREASED LIMIT: Rank analysis showed "Årsstudium i logistikk" at Rank 51. 50 is too tight.
+        limit = 100 if is_list_query else 30
+        logger.info(f"Query: '{current_query}' | Is List: {is_list_query} | Limit: {limit}")
 
+        chunks = await rag_service.search_similar_chunks(current_query, limit=limit)
+        
+        # If no chunks, we still call generate_answer to handle greetings/chitchat
+        
         # 3. Generate answer
         # We pass the rewritten query so the answer generation also benefits from the resolved context
         response_text = rag_service.generate_answer(current_query, chunks)

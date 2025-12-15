@@ -1,7 +1,7 @@
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import chat, messages
+from backend.routers import chat, messages
 
 app = FastAPI()
 
@@ -25,12 +25,25 @@ app.add_middleware(
 
 app.include_router(chat.router, prefix="/api")
 app.include_router(messages.router, prefix="/api")
-from routers import scraper
-app.include_router(scraper.router, prefix="/api")
-from routers import ingestion
-app.include_router(ingestion.router, prefix="/api")
-from routers import feedback
+
+# Optional Routers (require heavy dependencies like SQLAlchemy/Pgvector)
+# These may fail to load on Vercel if deps are stripped to save size.
+try:
+    from backend.routers import scraper
+    app.include_router(scraper.router, prefix="/api")
+except ImportError:
+    print("Warning: Scraper router not loaded (missing dependencies?)")
+
+try:
+    from backend.routers import ingestion
+    app.include_router(ingestion.router, prefix="/api")
+except ImportError:
+    print("Warning: Ingestion router not loaded (missing dependencies?)")
+
+# Core features - Must load or fail
+from backend.routers import feedback, transcript
 app.include_router(feedback.router, prefix="/api")
+app.include_router(transcript.router, prefix="/api")
 
 @app.get("/health")
 def health_check():

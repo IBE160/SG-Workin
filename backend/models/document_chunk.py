@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, BigInteger, Text, Index
 from sqlalchemy.dialects.postgresql import JSONB
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import text
-from core.database import Base  # Assuming Base is defined in core.database, need to verify/create that too.
+from backend.core.database import Base
 
 class DocumentChunk(Base):
     __tablename__ = "document_chunks"

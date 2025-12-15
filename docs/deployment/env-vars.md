@@ -22,6 +22,7 @@ These variables **MUST** be set in the Vercel Project Settings (Settings -> Envi
 
 | Variable | Description | Default / Example |
 | :--- | :--- | :--- |
-| `ALLOWED_ORIGINS` | Comma-separated list of allowed frontend origins for CORS. | `https://your-vercel-project.vercel.app,http://localhost:3000` |
+| `ALLOWED_ORIGINS` | CORS allowed domains. Add your **Production URL** and any Preview URLs. | `https://ibe160-chatbot.vercel.app,https://ibe160-chatbot-*.vercel.app,http://localhost:3000` |
 | `PROJECT_NAME` | Name of the project. | `ibe160-chatbot` |
-| `GEMINI_MODEL` | The specific model version to use. | `models/gemini-1.5-flash` |
+| `GEMINI_MODEL` | The specific model version to use. | `models/gemini-2.0-flash` |
+| `NEXT_PUBLIC_API_URL` | Base URL for API calls. Use relative path for Vercel Monorepo. | `/api` |
