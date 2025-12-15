@@ -42,6 +42,7 @@ development_status:
   2-2-university-website-scraper: done
   2-3-document-chunking-and-embedding: done
   2-4-basic-rag-pipeline-integration: done
+  2-5-admin-scraper-ui: done
   epic-2-retrospective: completed
 
   epic-3: done
@@ -54,7 +55,7 @@ development_status:
 
   epic-4: in-progress
   4-1-production-deployment: done
-  4-2-university-website-integration: backlog
-  4-3-performance-scalability-testing: backlog
-  4-4-accessibility-audit: backlog
+  4-2-university-website-integration: omitted
+  4-3-performance-scalability-testing: done
+  4-4-accessibility-audit: done
   epic-4-retrospective: optional

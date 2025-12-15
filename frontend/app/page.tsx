@@ -121,6 +121,7 @@ export default function Home() {
             onClick={handleClearChat}
             className="p-2 text-muted-foreground/50 hover:text-destructive transition-colors rounded-full hover:bg-muted"
             title="Clear Chat"
+            aria-label="Clear Chat"
           >
             <Trash2 className="w-5 h-5" />
           </button>
@@ -129,6 +130,7 @@ export default function Home() {
             onClick={() => setShowEndChat(true)}
             className="p-2 text-muted-foreground/50 hover:text-destructive transition-colors rounded-full hover:bg-muted"
             title="End Chat & Transcript"
+            aria-label="End Chat"
           >
             <LogOut className="w-5 h-5" />
           </button>

@@ -21,7 +21,7 @@ class RagService:
         Generates an embedding for the query and searches utilizing the 'match_documents' RPC.
         Uses REST API to avoid heavy grpcio dependency.
         """
-        import requests
+        import httpx
         
         try:
             # 1. Generate Embedding via REST
@@ -31,9 +31,10 @@ class RagService:
                 "taskType": "RETRIEVAL_QUERY"
             }
             
-            resp = requests.post(url, json=payload, headers={"Content-Type": "application/json"})
-            resp.raise_for_status()
-            embedding_data = resp.json()
+            async with httpx.AsyncClient() as client:
+                resp = await client.post(url, json=payload)
+                resp.raise_for_status()
+                embedding_data = resp.json()
             
             # Extract embedding vector (values)
             if "embedding" in embedding_data:
@@ -78,9 +79,6 @@ class RagService:
                 enriched_chunks = []
                 neighbor_ids_to_fetch = []
                 
-                # Group by URL to find localized gaps (optional, but simple neighbor fetch is easier)
-                # We'll simple fetch index+1 for every chunk if it's not already in the list.
-                
                 active_indices = set() # (url, index)
                 for row in meta_resp.data:
                     if row.get('url') and row.get('chunk_index') is not None:
@@ -97,27 +95,16 @@ class RagService:
                             next_index = chunk['chunk_index'] + 1
                             url = chunk['url']
                             if (url, next_index) not in active_indices:
-                                # Candidate for fetching. 
-                                # We need to find the ID of this neighbor. 
-                                # We can't fetch by ID because we don't know it. We must query by (url, index).
-                                # To avoid N queries, we collect these requirements.
                                 neighbor_ids_to_fetch.append({"url": url, "index": next_index})
                     
                     enriched_chunks.append(chunk)
 
                 # 2. Bulk fetch neighbors (if any)
                 if neighbor_ids_to_fetch:
-                     # Supabase OR syntax is tricky for multiple (url, index) pairs.
-                     # Simplified: Just query candidates that match the URLs we have, with index IN [list of indices].
-                     # Better: Query all chunks for these URLs where index is in the target set.
-                     # Optimization: limit to top 20 chunks to avoid explosion? 
-                     # Let's apply this logic only for the Top 20 chunks to keep it fast.
-                     
                      targets_to_fetch = neighbor_ids_to_fetch[:20] # fetch neighbors for top 20 only
                      
                      if targets_to_fetch:
                          or_cond = ",".join([f"and(url.eq.{t['url']},chunk_index.eq.{t['index']})" for t in targets_to_fetch])
-                         # Supabase-py .or_() method
                          
                          neighbor_resp = self.supabase.table("document_chunks") \
                             .select("id, content, url, chunk_index") \
@@ -125,7 +112,6 @@ class RagService:
                             .execute()
                             
                          for row in neighbor_resp.data:
-                             # Add neighbor as a chunk with slightly lower score (or inherit)
                              row['score'] = 0.0 # It's context, not a match
                              row['is_neighbor'] = True
                              enriched_chunks.append(row)
@@ -140,12 +126,13 @@ class RagService:
 
     # 250 RPM = 0.24s interval. Retrying after 1s is safe.
     @retry(stop=stop_after_attempt(4), wait=wait_exponential(multiplier=1, min=1, max=10))
-    def generate_answer(self, query: str, context_chunks: list) -> str:
+    async def generate_answer(self, query: str, context_chunks: list) -> str:
         """
         Generates an answer based on the provided query and context chunks using Gemini REST API.
         """
-        # FORCE FALLBACK for simple greetings to avoid context pollution (e.g. "Hi" matching "HiM")
-        # This ensures the strict Greeting/Persona logic in the fallback prompt is used.
+        import httpx
+
+        # FORCE FALLBACK for simple greetings
         greetings = {"hi", "hei", "hallo", "hello", "hey", "hvem er du", "who are you"}
         if query.strip().lower().replace("?", "").replace("!", "") in greetings:
             logger.info(f"Greeting detected: '{query}'. Forcing fallback prompt.")
@@ -178,8 +165,6 @@ class RagService:
             CRITICAL: If you cannot answer the question (e.g. it is not about the university and not a greeting), politely state you don't know and provide this link: [Contact Us](https://www.himolde.no/kontakt-oss/)
             """
         else:
-            # Prepend URL to each chunk so the LLM knows the source link for every piece of information.
-            # This allows it to generate clickable links for "General Pages" or "Student Life" items.
             context_text = "\n\n".join([
                 f"Source: {chunk.get('url', 'Unknown')}\nContent: {chunk.get('content', '')}" 
                 for chunk in context_chunks
@@ -192,7 +177,6 @@ class RagService:
 
         url = f"{self.base_url}/{self.generation_model}:generateContent?key={self.api_key}"
         logger.info(f"Generating answer with model: {self.generation_model}")
-        # logger.info(f"Prompt preview: {prompt_text[:500]}...") 
         
         payload = {
             "contents": [{
@@ -200,24 +184,21 @@ class RagService:
             }]
         }
 
-        resp = requests.post(url, json=payload, headers={"Content-Type": "application/json"})
-        resp.raise_for_status()
-        data = resp.json()
-        
-        # logger.info(f"Raw Gemini Response: {data}")
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(url, json=payload, timeout=30.0)
+            resp.raise_for_status()
+            data = resp.json()
         
         if "candidates" not in data or not data["candidates"]:
              logger.error(f"Gemini returned no candidates. Safety block? Data: {data}")
              return "I apologize, but I cannot answer that request."
 
-        # Extract text
-        # Structure: candidates[0].content.parts[0].text
         return data["candidates"][0]["content"]["parts"][0]["text"]
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=1, max=10))
-    def detect_ambiguity(self, query: str) -> dict:
+    async def detect_ambiguity(self, query: str) -> dict:
         """Check if query is ambiguous using REST API."""
-        import requests
+        import httpx
         import json
         
         prompt_text = settings.AMBIGUITY_SYSTEM_PROMPT.format(query=query)
@@ -229,20 +210,21 @@ class RagService:
             "generationConfig": {"responseMimeType": "application/json"}
         }
         
-        resp = requests.post(url, json=payload, headers={"Content-Type": "application/json"})
-        resp.raise_for_status()
-        data = resp.json()
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(url, json=payload, timeout=10.0)
+            resp.raise_for_status()
+            data = resp.json()
         
         text_content = data["candidates"][0]["content"]["parts"][0]["text"]
         return json.loads(text_content)
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=1, max=10))
-    def contextualize_query(self, query: str, history: list[ChatMessage]) -> str:
+    async def contextualize_query(self, query: str, history: list[ChatMessage]) -> str:
         """Rewrite query to be self-contained using REST API."""
         if not history:
             return query
             
-        import requests
+        import httpx
         
         history_text = "\n".join([f"{msg.role}: {msg.content}" for msg in history])
         prompt_text = settings.CONTEXTUALIZE_SYSTEM_PROMPT.format(
@@ -255,9 +237,10 @@ class RagService:
             "contents": [{"parts": [{"text": prompt_text}]}]
         }
         
-        resp = requests.post(url, json=payload, headers={"Content-Type": "application/json"})
-        resp.raise_for_status()
-        data = resp.json()
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(url, json=payload, timeout=10.0)
+            resp.raise_for_status()
+            data = resp.json()
         
         rewritten = data["candidates"][0]["content"]["parts"][0]["text"].strip()
         logger.info(f"Contextualized Query (REST): '{query}' -> '{rewritten}'")

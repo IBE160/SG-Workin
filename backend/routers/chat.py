@@ -21,10 +21,10 @@ async def chat(request: ChatRequest, rag_service: RagService = Depends(get_rag_s
         # 0. Contextualize query if history exists
         current_query = request.message
         if request.history:
-            current_query = rag_service.contextualize_query(request.message, request.history)
+            current_query = await rag_service.contextualize_query(request.message, request.history)
 
         # 1. Check for ambiguity (Interactive Guidance)
-        ambiguity_result = rag_service.detect_ambiguity(current_query)
+        ambiguity_result = await rag_service.detect_ambiguity(current_query)
         
         if ambiguity_result.get("is_ambiguous"):
             return ChatResponse(
@@ -44,7 +44,8 @@ async def chat(request: ChatRequest, rag_service: RagService = Depends(get_rag_s
             "hvilke programmer har dere", "hvilke studier har dere", 
             "what programs do you have", "alle studier", "alle programmer",
             "hvilke fag", "hvilke emner", "which courses", "what courses", "course list", "fagliste",
-            "årsstudier", "year studies", "bachelor", "master", "phd"
+            "årsstudier", "årsstudium", "year studies", "bachelor", "master", "phd",
+            "tilbys", "offered", "studietilbud"
         ]
         is_list_query = any(kw in current_query.lower() for kw in list_keywords)
         
@@ -58,7 +59,7 @@ async def chat(request: ChatRequest, rag_service: RagService = Depends(get_rag_s
         
         # 3. Generate answer
         # We pass the rewritten query so the answer generation also benefits from the resolved context
-        response_text = rag_service.generate_answer(current_query, chunks)
+        response_text = await rag_service.generate_answer(current_query, chunks)
         sources = rag_service.extract_sources(chunks)
 
         return ChatResponse(

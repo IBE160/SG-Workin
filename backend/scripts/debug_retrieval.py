@@ -16,7 +16,9 @@ async def debug_retrieval():
     
     rag_service = RagService()
     
-    query = "hvilke fag inngår i Årsstudium i logistikk?"
+    rag_service = RagService()
+    
+    query = sys.argv[1] if len(sys.argv) > 1 else "hvilke årsstudium tilbys?"
     print(f"\nQuery: {query}")
     
     print("Searching chunks via RagService...")

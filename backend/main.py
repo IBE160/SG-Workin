@@ -45,6 +45,12 @@ from backend.routers import feedback, transcript
 app.include_router(feedback.router, prefix="/api")
 app.include_router(transcript.router, prefix="/api")
 
+try:
+    from backend.routers import admin
+    app.include_router(admin.router, prefix="/api")
+except ImportError:
+    print("Warning: Admin router not loaded")
+
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
