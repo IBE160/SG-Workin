@@ -13,4 +13,7 @@ supabase==2.25.1
 # Utilities
 tenacity==9.1.2
 requests==2.32.5
+httpx==0.28.1
+sqlalchemy==2.0.45
+pgvector==0.4.2
 beautifulsoup4==4.14.3
