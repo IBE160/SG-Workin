@@ -23,7 +23,7 @@ export function UrlManager() {
     const [sortField, setSortField] = useState<"url" | "title" | "scraped_at">("scraped_at")
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc")
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api'
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || '/api'
 
     // Auth Helper
     const getAuthHeaders = async () => {
