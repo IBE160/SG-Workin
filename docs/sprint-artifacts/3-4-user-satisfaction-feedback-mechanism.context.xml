@@ -1,0 +1,28 @@
+<story_context>
+    <story_id>3-4</story_id>
+    <story_name>user-satisfaction-feedback-mechanism</story_name>
+    <story_file>docs/sprint-artifacts/3-4-user-satisfaction-feedback-mechanism.md</story_file>
+    <status>todo</status>
+    
+    <files>
+        <file path="backend/schemas/feedback.py">
+            <reason>New schema for feedback data.</reason>
+        </file>
+        <file path="backend/routers/feedback.py">
+            <reason>New API endpoint to handle feedback submission.</reason>
+        </file>
+        <file path="backend/main.py">
+            <reason>Register the new feedback router.</reason>
+        </file>
+    </files>
+
+    <implementation_notes>
+        1.  Database: Create `feedback` table in Supabase via SQL editor (or migration script if set up).
+            -   id (uuid, PK)
+            -   rating (int)
+            -   comment (text)
+            -   created_at (timestamp)
+        2.  API: `POST /feedback` accepts JSON payload.
+        3.  Storage: Unit usage of `supabase-py` to insert data.
+    </implementation_notes>
+</story_context>

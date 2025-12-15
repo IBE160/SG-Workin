@@ -1,0 +1,20 @@
+# Production Dependencies for Vercel Serverless Function
+# ULTRA-LEAN: No Heavy SDKs. REST API calls only.
+
+fastapi==0.124.0
+uvicorn==0.38.0
+pydantic[email]==2.12.5
+pydantic-settings==2.12.0
+python-dotenv==1.2.1
+
+# Database (Supabase Raw Client only)
+supabase==2.25.1
+
+# Utilities
+tenacity==9.1.2
+requests==2.32.5
+httpx==0.28.1
+sqlalchemy==2.0.45
+pgvector==0.4.2
+
+beautifulsoup4==4.14.3

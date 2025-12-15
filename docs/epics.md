@@ -309,7 +309,9 @@ So that it is publicly accessible.
 
 **Technical Notes:** Finalize Vercel configuration, environment variables for production.
 
-### Story 4.2: University Website Integration
+### Story 4.2: University Website Integration [OMITTED]
+
+**NOTE:** This story is omitted as the application will not be published on the official university website.
 
 As a user,
 I want to easily find and access the chatbot from the university website,

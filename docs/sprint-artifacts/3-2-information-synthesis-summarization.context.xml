@@ -1,0 +1,21 @@
+<story_context>
+    <story_id>3-2</story_id>
+    <story_name>information-synthesis-summarization</story_name>
+    <story_file>docs/sprint-artifacts/3-2-information-synthesis-summarization.md</story_file>
+    <status>done</status>
+    
+    <files>
+        <file path="backend/core/config.py">
+            <reason>Contains the RAG system prompt which enforces synthesis.</reason>
+        </file>
+        <file path="backend/services/rag.py">
+            <reason>Implements the generation logic using the configured prompt.</reason>
+        </file>
+    </files>
+
+    <implementation_notes>
+        The story is implemented by modifying the RAG system prompt in `backend/core/config.py` to explicitly instruct the LLM to synthesize information from multiple context chunks.
+        The `RagService` in `backend/services/rag.py` uses this prompt during answer generation.
+        Verification was performed using `backend/scripts/manual_test_synthesis.py`.
+    </implementation_notes>
+</story_context>

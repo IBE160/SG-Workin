@@ -1,0 +1,403 @@
+<context>
+  <story_definition>
+    <path>docs/stories/4-4-accessibility-audit.story.md</path>
+    <content>
+# Story 4.4: Accessibility Audit
+
+**Status:** todo
+**Epic:** Epic 4: Deployment & Integration
+
+## Description
+As a developer, I want to audit the chatbot's accessibility, So that I can ensure it complies with WCAG 2.1 AA standards.
+
+## Acceptance Criteria
+- [ ] **Given** the application is deployed, **When** an accessibility audit is performed, **Then** a report is generated detailing any accessibility issues.
+- [ ] **And** any critical issues are addressed.
+
+## Technical Notes
+- Use tools like Lighthouse or Axe for accessibility auditing.
+- Focus on contrast, keyboard navigation, and screen reader compatibility (ARIA labels).
+- Ensure Shadcn UI components retain their accessibility features.
+
+## Tasks
+- [ ] Run Lighthouse Accessibility Audit on Landing Page
+- [ ] Run Lighthouse Accessibility Audit on Chat Interface
+- [ ] Run Lighthouse Accessibility Audit on Admin Login
+- [ ] Run Lighthouse Accessibility Audit on Admin Dashboard
+- [ ] Fix Critical Issues (Score < 90)
+- [ ] Generate Audit Report
+    </content>
+  </story_definition>
+
+  <file>
+    <path>frontend/app/page.tsx</path>
+    <description>Main Landing Page & Chat Interface Container</description>
+    <content>
+"use client"
+
+import { ChatWindow, Message } from '@/components/modules/chat/ChatWindow'
+import { ChatInput } from '@/components/modules/chat/ChatInput'
+import { useState } from 'react'
+
+import { Trash2, MessageSquarePlus } from "lucide-react"
+import { EndChatModal } from '@/components/modules/chat/EndChatModal'
+import { LogOut } from "lucide-react"
+
+export default function Home() {
+  const [messages, setMessages] = useState<Message[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [showEndChat, setShowEndChat] = useState(false)
+
+  const handleSendMessage = async (text: string) => {
+    // Add user message immediately
+    const userMsg: Message = { role: 'user', content: text }
+    setMessages(prev => [...prev, userMsg])
+    setIsLoading(true)
+
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api'
+      // Convert history to format expected by backend (excluding current message)
+      const history = messages.map(m => ({
+        role: m.role,
+        content: m.content
+      }))
+
+      const response = await fetch(`${apiUrl}/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: text,
+          history: history
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok')
+      }
+
+      const data = await response.json()
+      // data.data.response contains the bot's text
+      const botMsg: Message = {
+        role: 'assistant',
+        content: data.data.response,
+        type: data.data.type,
+        escalationLink: data.data.escalation_link,
+        sources: data.data.sources // Extract sources from API
+      }
+      setMessages(prev => [...prev, botMsg])
+    } catch (error) {
+      console.error('Error sending message:', error)
+      const errorMsg: Message = { role: 'assistant', content: 'Sorry, something went wrong. Please try again later.' }
+      setMessages(prev => [...prev, errorMsg])
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleClearChat = () => {
+    setMessages([])
+  }
+
+  const handleEndChatSubmit = async (score: number, comment: string, email: string) => {
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api'
+
+      // Prepare chat history for transcript
+      const history = messages.map(m => ({
+        role: m.role,
+        content: m.content
+      }))
+
+      await fetch(`${apiUrl}/transcript`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email || null,
+          chat_history: history,
+          rating: score,
+          comment: comment
+        })
+      })
+
+      // Clear chat after successful submission
+      setMessages([])
+
+    } catch (e) {
+      console.error("End Chat failed", e)
+    }
+  }
+
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-between p-24 relative">
+      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
+        <h1 className="text-4xl font-bold text-center w-full mb-8">Chat</h1>
+      </div>
+
+      <ChatWindow messages={messages} />
+
+      {/* End Chat Modal Overlay */}
+      {showEndChat && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-background rounded-lg shadow-xl">
+            <EndChatModal
+              onSubmit={handleEndChatSubmit}
+              onClose={() => setShowEndChat(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      <div className="fixed bottom-0 left-0 w-full p-4 bg-background border-t z-40">
+        <div className="max-w-5xl mx-auto flex items-center gap-4">
+          <button
+            onClick={handleClearChat}
+            className="p-2 text-muted-foreground/50 hover:text-destructive transition-colors rounded-full hover:bg-muted"
+            title="Clear Chat"
+          >
+            <Trash2 className="w-5 h-5" />
+          </button>
+
+          <button
+            onClick={() => setShowEndChat(true)}
+            className="p-2 text-muted-foreground/50 hover:text-destructive transition-colors rounded-full hover:bg-muted"
+            title="End Chat & Transcript"
+          >
+            <LogOut className="w-5 h-5" />
+          </button>
+
+          <div className="flex-1">
+            <ChatInput onSend={handleSendMessage} isLoading={isLoading} />
+          </div>
+        </div>
+      </div>
+    </main>
+  )
+}
+    </content>
+  </file>
+
+  <file>
+    <path>frontend/app/layout.tsx</path>
+    <description>Root Layout (Fonts, Theme)</description>
+    <content>
+import type { Metadata } from "next";
+import { Geist } from "next/font/google";
+import { ThemeProvider } from "next-themes";
+import "./globals.css";
+
+const defaultUrl = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : "http://localhost:3000";
+
+export const metadata: Metadata = {
+  metadataBase: new URL(defaultUrl),
+  title: "Chatbot IBE160",
+  description: "Chatbot for Molde University College",
+};
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  display: "swap",
+  subsets: ["latin"],
+});
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${geistSans.className} antialiased`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}
+    </content>
+  </file>
+
+  <file>
+    <path>frontend/components/login-form.tsx</path>
+    <description>Login Component (Input Labels, Contrast)</description>
+    <content>
+"use client";
+
+import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+export function LoginForm({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<"div">) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const supabase = createClient();
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) throw error;
+      // Update this route to redirect to an authenticated route. The user already has an active session.
+      router.push("/admin");
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "An error occurred");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl">Login</CardTitle>
+          <CardDescription>
+            Enter your email below to login to your account
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleLogin}>
+            <div className="flex flex-col gap-6">
+              <div className="grid gap-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div className="grid gap-2">
+                <div className="flex items-center">
+                  <Label htmlFor="password">Password</Label>
+                  <Link
+                    href="/auth/forgot-password"
+                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                  >
+                    Forgot your password?
+                  </Link>
+                </div>
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+              {error && <p className="text-sm text-red-500">{error}</p>}
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Logging in..." : "Login"}
+              </Button>
+            </div>
+            <div className="mt-4 text-center text-sm">
+              Don&apos;t have an account?{" "}
+              <Link
+                href="/auth/sign-up"
+                className="underline underline-offset-4"
+              >
+                Sign up
+              </Link>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+    </content>
+  </file>
+
+  <file>
+    <path>frontend/app/admin/page.tsx</path>
+    <description>Admin Content Dashboard</description>
+    <content>
+"use client"
+
+import { useEffect, useState } from "react"
+import { UrlManager } from "@/components/admin/UrlManager"
+import { Button } from "@/components/ui/button"
+import { createClient } from "@/utils/supabase/client"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
+
+export default function AdminPage() {
+    const router = useRouter()
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        const checkUser = async () => {
+            const supabase = createClient()
+            const { data } = await supabase.auth.getSession()
+            if (!data.session) {
+                router.push("/auth/login")
+                return // Prevent loading state change
+            }
+            setLoading(false)
+        }
+        checkUser()
+    }, [router])
+
+    const handleLogout = async () => {
+        const supabase = createClient()
+        await supabase.auth.signOut()
+        router.push("/auth/login")
+    }
+
+    if (loading) return <div className="p-8">Loading content manager...</div>
+
+    return (
+        <main className="container mx-auto p-8 max-w-5xl">
+            <div className="flex justify-between items-center mb-8">
+                <div className="flex items-center gap-4">
+                    <h1 className="text-3xl font-bold">Admin: Content</h1>
+                    <Link href="/admin/users">
+                        <Button variant="outline">Manage Users</Button>
+                    </Link>
+                </div>
+                <Button variant="outline" onClick={handleLogout}>Logout</Button>
+            </div>
+            <div className="grid grid-cols-1 gap-8">
+                <UrlManager />
+            </div>
+        </main>
+    )
+}
+    </content>
+  </file>
+</context>
